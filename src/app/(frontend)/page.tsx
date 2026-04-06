@@ -1,6 +1,5 @@
 import { headers as getHeaders } from 'next/headers.js'
 import Image from 'next/image'
-import Link from 'next/link'
 import { getPayload } from 'payload'
 import React from 'react'
 
@@ -8,15 +7,19 @@ import config from '@/payload.config'
 import './styles.css'
 
 export default async function HomePage() {
-  const headers = await getHeaders()
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
+  let produtos: any = { docs: [] }
 
-  const produtos = await payload.find({
-    collection: 'produtos',
-    pagination: false,
-    depth: 1,
-  })
+  try {
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+    produtos = await payload.find({
+      collection: 'produtos',
+      pagination: false,
+      depth: 1,
+    })
+  } catch (error) {
+    console.error('Error fetching produtos:', error)
+  }
 
   return (
     <div className="store-container">
@@ -43,11 +46,12 @@ export default async function HomePage() {
               <div className="product-image">
                 {produto.imagem?.url ? (
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_SERVER_URL}${produto.imagem.url}`}
+                    src={`${process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '')}${produto.imagem.url}`}
                     alt={produto.titulo}
                     width={300}
                     height={300}
                     style={{ objectFit: 'cover' }}
+                    unoptimized
                   />
                 ) : (
                   <div className="image-placeholder">📦</div>
@@ -56,7 +60,9 @@ export default async function HomePage() {
               <div className="product-info">
                 <span className="product-category">{produto.categoria}</span>
                 <h3 className="product-title">{produto.titulo}</h3>
-                <span className="product-price">R$ {produto.preco.toFixed(2).replace('.', ',')}</span>
+                <span className="product-price">
+                  R$ {typeof produto.preco === 'number' ? produto.preco.toFixed(2).replace('.', ',') : produto.preco}
+                </span>
               </div>
             </a>
           ))}

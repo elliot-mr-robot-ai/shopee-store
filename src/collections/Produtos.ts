@@ -6,6 +6,10 @@ export const Produtos: CollectionConfig = {
     useAsTitle: 'titulo',
     defaultColumns: ['titulo', 'preco', 'imagem', 'linkAfiliado'],
   },
+  access: {
+    read: () => true,
+    create: () => true,
+  },
   fields: [
     {
       name: 'titulo',
