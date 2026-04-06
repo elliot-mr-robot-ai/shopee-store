@@ -179,10 +179,6 @@ export interface Produto {
    */
   linkAfiliado: string;
   /**
-   * Upload de imagem pelo admin
-   */
-  imagem?: (number | null) | Media;
-  /**
    * Ou cole uma URL de imagem diretamente (ex: Vercel Blob URL)
    */
   imagemUrl?: string | null;
@@ -316,7 +312,6 @@ export interface ProdutosSelect<T extends boolean = true> {
   titulo?: T;
   preco?: T;
   linkAfiliado?: T;
-  imagem?: T;
   imagemUrl?: T;
   categoria?: T;
   updatedAt?: T;
