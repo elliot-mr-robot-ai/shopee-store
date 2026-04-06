@@ -44,16 +44,7 @@ export default async function HomePage() {
               className="product-card"
             >
               <div className="product-image">
-                {produto.imagem?.url ? (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '')}${produto.imagem.url}`}
-                    alt={produto.titulo}
-                    width={300}
-                    height={300}
-                    style={{ objectFit: 'cover' }}
-                    unoptimized
-                  />
-                ) : produto.imagemUrl ? (
+                {produto.imagemUrl ? (
                   <img src={produto.imagemUrl} alt={produto.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <div className="image-placeholder">📦</div>

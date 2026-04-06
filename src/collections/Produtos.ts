@@ -4,7 +4,7 @@ export const Produtos: CollectionConfig = {
   slug: 'produtos',
   admin: {
     useAsTitle: 'titulo',
-    defaultColumns: ['titulo', 'preco', 'imagem', 'linkAfiliado'],
+    defaultColumns: ['titulo', 'preco', 'imagemUrl', 'linkAfiliado'],
   },
   access: {
     read: () => true,
@@ -33,15 +33,6 @@ export const Produtos: CollectionConfig = {
       label: 'Link de Afiliado',
       admin: {
         description: 'URL completa do link de afiliado da Shopee',
-      },
-    },
-    {
-      name: 'imagem',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Imagem do Produto (upload)',
-      admin: {
-        description: 'Upload de imagem pelo admin',
       },
     },
     {
