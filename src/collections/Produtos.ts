@@ -39,8 +39,18 @@ export const Produtos: CollectionConfig = {
       name: 'imagem',
       type: 'upload',
       relationTo: 'media',
-      required: true,
-      label: 'Imagem do Produto',
+      label: 'Imagem do Produto (upload)',
+      admin: {
+        description: 'Upload de imagem pelo admin',
+      },
+    },
+    {
+      name: 'imagemUrl',
+      type: 'text',
+      label: 'URL da Imagem',
+      admin: {
+        description: 'Ou cole uma URL de imagem diretamente (ex: Vercel Blob URL)',
+      },
     },
     {
       name: 'categoria',

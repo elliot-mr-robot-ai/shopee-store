@@ -53,6 +53,8 @@ export default async function HomePage() {
                     style={{ objectFit: 'cover' }}
                     unoptimized
                   />
+                ) : produto.imagemUrl ? (
+                  <img src={produto.imagemUrl} alt={produto.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <div className="image-placeholder">📦</div>
                 )}
