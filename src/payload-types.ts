@@ -178,7 +178,14 @@ export interface Produto {
    * URL completa do link de afiliado da Shopee
    */
   linkAfiliado: string;
-  imagem: number | Media;
+  /**
+   * Upload de imagem pelo admin
+   */
+  imagem?: (number | null) | Media;
+  /**
+   * Ou cole uma URL de imagem diretamente (ex: Vercel Blob URL)
+   */
+  imagemUrl?: string | null;
   categoria?: ('camisetas' | 'bermudas' | 'tenis' | 'acessorios' | 'suplementos' | 'equipamentos') | null;
   updatedAt: string;
   createdAt: string;
@@ -310,6 +317,7 @@ export interface ProdutosSelect<T extends boolean = true> {
   preco?: T;
   linkAfiliado?: T;
   imagem?: T;
+  imagemUrl?: T;
   categoria?: T;
   updatedAt?: T;
   createdAt?: T;
