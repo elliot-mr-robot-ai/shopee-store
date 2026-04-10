@@ -11,6 +11,7 @@ export async function POST(request: Request) {
 
     const result = await payload.create({
       collection: 'produtos',
+      draft: false,
       data: {
         titulo,
         preco,
