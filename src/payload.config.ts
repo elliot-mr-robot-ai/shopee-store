@@ -25,6 +25,9 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
+  graphQL: {
+    schemaOutputFile: path.resolve(dirname, 'generated-schema.graphql'),
+  },
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
