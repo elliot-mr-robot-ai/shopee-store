@@ -171,6 +171,10 @@ export interface Produto {
   id: number;
   titulo: string;
   /**
+   * URL amigável. Ex: kit-ferramentas-46-pecas
+   */
+  slug: string;
+  /**
    * Preço em reais, sem símbolo. Ex: 89.90
    */
   preco: number;
@@ -179,10 +183,14 @@ export interface Produto {
    */
   linkAfiliado: string;
   /**
-   * Ou cole uma URL de imagem diretamente (ex: Vercel Blob URL)
+   * URL da imagem do produto (Vercel Blob ou URL direta)
    */
   imagemUrl?: string | null;
   categoria?: ('camisetas' | 'bermudas' | 'tenis' | 'acessorios' | 'suplementos' | 'equipamentos') | null;
+  /**
+   * Descrição do produto (para SEO)
+   */
+  descricao?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -310,10 +318,12 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ProdutosSelect<T extends boolean = true> {
   titulo?: T;
+  slug?: T;
   preco?: T;
   linkAfiliado?: T;
   imagemUrl?: T;
   categoria?: T;
+  descricao?: T;
   updatedAt?: T;
   createdAt?: T;
 }
