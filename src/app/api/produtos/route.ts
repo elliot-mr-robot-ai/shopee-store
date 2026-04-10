@@ -1,50 +1,82 @@
-import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { NextRequest, NextResponse } from 'next/server'
+import { Client } from 'pg'
 
-export async function POST(request: Request) {
+// Direct PostgreSQL connection without Payload
+async function getDbClient() {
+  return new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  })
+}
+
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json()
+    const body = await req.json()
     const { titulo, preco, linkAfiliado, categoria, imagemUrl } = body
 
-    const payload = await getPayload({ config: configPromise })
+    if (!titulo || !preco || !linkAfiliado) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'titulo, preco e linkAfiliado são obrigatórios' 
+      }, { status: 400 })
+    }
 
-    const result = await payload.create({
-      collection: 'produtos',
-      draft: false,
-      data: {
-        titulo,
-        preco,
-        linkAfiliado,
-        categoria,
-        imagemUrl,
-      },
-    })
+    const slug = generateSlug(titulo)
 
-    return NextResponse.json({ success: true, data: result })
-  } catch (error: any) {
-    console.error('Error creating produto:', error)
-    return NextResponse.json(
-      { success: false, error: error.message || 'Unknown error' },
-      { status: 500 }
+    const client = await getDbClient()
+    await client.connect()
+
+    const result = await client.query(
+      `INSERT INTO produtos (titulo, slug, preco, link_afiliado, categoria, imagem_url) 
+       VALUES ($1, $2, $3, $4, $5, $6) 
+       RETURNING id, titulo, slug`,
+      [titulo, slug, preco, linkAfiliado, categoria || null, imagemUrl || null]
     )
+
+    await client.end()
+
+    return NextResponse.json({ 
+      success: true, 
+      data: result.rows[0] 
+    })
+  } catch (error: any) {
+    console.error('Error:', error)
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message 
+    }, { status: 500 })
   }
 }
 
 export async function GET() {
   try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'produtos',
-      pagination: false,
-      depth: 1,
-    })
-    return NextResponse.json({ success: true, data: result.docs })
-  } catch (error: any) {
-    console.error('Error fetching produtos:', error)
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
+    const client = await getDbClient()
+    await client.connect()
+
+    const result = await client.query(
+      'SELECT id, titulo, slug, preco, link_afiliado as "linkAfiliado", categoria, imagem_url as "imagemUrl" FROM produtos ORDER BY id DESC'
     )
+
+    await client.end()
+
+    return NextResponse.json({ 
+      success: true, 
+      data: result.rows 
+    })
+  } catch (error: any) {
+    console.error('Error:', error)
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message 
+    }, { status: 500 })
   }
 }
