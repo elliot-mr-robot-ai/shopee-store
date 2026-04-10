@@ -38,9 +38,7 @@ export default async function HomePage() {
           {produtos.docs.map((produto: any) => (
             <a
               key={produto.id}
-              href={produto.linkAfiliado}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/produto/${produto.slug || produto.id}`}
               className="product-card"
             >
               <div className="product-image">

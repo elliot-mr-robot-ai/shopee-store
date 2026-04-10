@@ -10,12 +10,37 @@ export const Produtos: CollectionConfig = {
     read: () => true,
     create: () => true,
   },
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        // Generate slug from titulo if not provided
+        if (data.titulo && !data.slug) {
+          data.slug = data.titulo
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '')
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'titulo',
       type: 'text',
       required: true,
       label: 'Título do Produto',
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      label: 'Slug (URL)',
+      admin: {
+        description: 'URL amigável. Ex: kit-ferramentas-46-pecas',
+      },
     },
     {
       name: 'preco',
@@ -40,7 +65,7 @@ export const Produtos: CollectionConfig = {
       type: 'text',
       label: 'URL da Imagem',
       admin: {
-        description: 'Ou cole uma URL de imagem diretamente (ex: Vercel Blob URL)',
+        description: 'URL da imagem do produto (Vercel Blob ou URL direta)',
       },
     },
     {
@@ -55,6 +80,14 @@ export const Produtos: CollectionConfig = {
         { label: 'Equipamentos', value: 'equipamentos' },
       ],
       label: 'Categoria',
+    },
+    {
+      name: 'descricao',
+      type: 'textarea',
+      label: 'Descrição',
+      admin: {
+        description: 'Descrição do produto (para SEO)',
+      },
     },
   ],
 }
