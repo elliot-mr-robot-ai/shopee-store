@@ -171,9 +171,9 @@ export interface Produto {
   id: number;
   titulo: string;
   /**
-   * URL amigável. Ex: kit-ferramentas-46-pecas
+   * URL amigável. Ex: kit-ferramentas-46-pecas (gerado automaticamente se vazio)
    */
-  slug: string;
+  slug?: string | null;
   /**
    * Preço em reais, sem símbolo. Ex: 89.90
    */

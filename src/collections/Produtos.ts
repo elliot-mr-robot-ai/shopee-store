@@ -36,10 +36,9 @@ export const Produtos: CollectionConfig = {
     {
       name: 'slug',
       type: 'text',
-      required: true,
       label: 'Slug (URL)',
       admin: {
-        description: 'URL amigável. Ex: kit-ferramentas-46-pecas',
+        description: 'URL amigável. Ex: kit-ferramentas-46-pecas (gerado automaticamente se vazio)',
       },
     },
     {
