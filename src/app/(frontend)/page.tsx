@@ -7,19 +7,25 @@ import './styles.css'
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  let produtos: any = { docs: [] }
+  let produtos: any = { docs: [], totalDocs: 0 }
+  let errorMessage = ''
 
   try {
     const payloadConfig = await config
     const payload = await getPayload({ config: payloadConfig })
+    console.log('Payload initialized successfully')
     
-    produtos = await payload.find({
+    const result = await payload.find({
       collection: 'produtos',
       pagination: false,
       limit: 50,
     })
-  } catch (error) {
+    console.log('Found produtos:', result.totalDocs)
+    
+    produtos = result
+  } catch (error: any) {
     console.error('Error fetching produtos:', error)
+    errorMessage = error.message || 'Unknown error'
   }
 
   return (
@@ -27,11 +33,15 @@ export default async function HomePage() {
       <header className="store-header">
         <h1>🏋️ Loja Fitness</h1>
         <p>Produtos de academia com os melhores preços</p>
+        {errorMessage && (
+          <p style={{color: 'red', fontSize: '12px'}}>Debug: {errorMessage}</p>
+        )}
       </header>
 
       {produtos.docs.length === 0 ? (
         <div className="empty-state">
           <p>Nenhum produto cadastrado ainda.</p>
+          <p>Total no banco: {produtos.totalDocs}</p>
           <p>Envie um link da Shopee no Telegram e o agente Elliot cadastra automaticamente! 🚀</p>
         </div>
       ) : (
