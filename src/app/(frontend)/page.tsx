@@ -1,25 +1,23 @@
-import { getPayload } from 'payload'
 import React from 'react'
-
-import config from '@/payload.config'
 import './styles.css'
 
 export const dynamic = 'force-dynamic'
 
-export default async function HomePage() {
-  let produtos: any = { docs: [] }
-
+async function getProdutos() {
   try {
-    const payloadConfig = await config
-    const payload = await getPayload({ config: payloadConfig })
-    produtos = await payload.find({
-      collection: 'produtos',
-      pagination: false,
-      depth: 1,
+    const res = await fetch('https://shopee-store-six.vercel.app/api/produtos', {
+      next: { revalidate: 0 }
     })
+    const data = await res.json()
+    return data.data || []
   } catch (error) {
     console.error('Error fetching produtos:', error)
+    return []
   }
+}
+
+export default async function HomePage() {
+  const produtos = await getProdutos()
 
   return (
     <div className="store-container">
@@ -28,14 +26,14 @@ export default async function HomePage() {
         <p>Produtos de academia com os melhores preços</p>
       </header>
 
-      {produtos.docs.length === 0 ? (
+      {produtos.length === 0 ? (
         <div className="empty-state">
           <p>Nenhum produto cadastrado ainda.</p>
           <p>Envie um link da Shopee no Telegram e o agente Elliot cadastra automaticamente! 🚀</p>
         </div>
       ) : (
         <div className="product-grid">
-          {produtos.docs.map((produto: any) => (
+          {produtos.map((produto: any) => (
             <a
               key={produto.id}
               href={`/produto/${produto.slug || produto.id}`}

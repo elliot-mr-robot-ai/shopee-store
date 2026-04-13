@@ -53,8 +53,24 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url)
+    const slugFilter = searchParams.get('slug')
+    
+    let query = `SELECT id, titulo, slug, preco, link_afiliado as "linkAfiliado", 
+              categoria, imagem_url as "imagemUrl", 
+              created_at as "createdAt" 
+       FROM produtos`
+    const params: any[] = []
+    
+    if (slugFilter) {
+      query += ` WHERE slug = $1`
+      params.push(slugFilter)
+    }
+    
+    query += ` ORDER BY created_at DESC`
+
     const client = new Client({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false }
@@ -62,13 +78,7 @@ export async function GET() {
     
     await client.connect()
 
-    const result = await client.query(
-      `SELECT id, titulo, slug, preco, link_afiliado as "linkAfiliado", 
-              categoria, imagem_url as "imagemUrl", 
-              created_at as "createdAt" 
-       FROM produtos 
-       ORDER BY created_at DESC`
-    )
+    const result = await client.query(query, params)
 
     await client.end()
 
