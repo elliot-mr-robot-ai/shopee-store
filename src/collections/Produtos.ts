@@ -73,20 +73,12 @@ export const Produtos: CollectionConfig = {
       options: [
         { label: 'Camisetas', value: 'camisetas' },
         { label: 'Bermudas', value: 'bermudas' },
-        { label: 'Tênis', value: 'tenis' },
-        { label: 'Acessórios', value: 'acessorios' },
+        { label: 'Tenis', value: 'tenis' },
+        { label: 'Acessorios', value: 'acessorios' },
         { label: 'Suplementos', value: 'suplementos' },
         { label: 'Equipamentos', value: 'equipamentos' },
       ],
       label: 'Categoria',
-    },
-    {
-      name: 'descricao',
-      type: 'textarea',
-      label: 'Descrição',
-      admin: {
-        description: 'Descrição do produto (para SEO)',
-      },
     },
   ],
 }
