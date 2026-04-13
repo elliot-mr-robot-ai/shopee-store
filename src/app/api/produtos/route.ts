@@ -13,7 +13,7 @@ function generateSlug(title: string): string {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { titulo, preco, linkAfiliado, categoria, imagemUrl, descricao } = body
+    const { titulo, preco, linkAfiliado, categoria, imagemUrl } = body
 
     if (!titulo || !preco || !linkAfiliado) {
       return NextResponse.json({ 
@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
     await client.connect()
 
     const result = await client.query(
-      `INSERT INTO produtos (titulo, slug, preco, link_afiliado, categoria, imagem_url, descricao) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7) 
+      `INSERT INTO produtos (titulo, slug, preco, link_afiliado, categoria, imagem_url) 
+       VALUES ($1, $2, $3, $4, $5, $6) 
        RETURNING id, titulo, slug, preco`,
-      [titulo, slug, preco, linkAfiliado, categoria || null, imagemUrl || null, descricao || null]
+      [titulo, slug, preco, linkAfiliado, categoria || null, imagemUrl || null]
     )
 
     await client.end()
@@ -64,7 +64,7 @@ export async function GET() {
 
     const result = await client.query(
       `SELECT id, titulo, slug, preco, link_afiliado as "linkAfiliado", 
-              categoria, imagem_url as "imagemUrl", descricao, 
+              categoria, imagem_url as "imagemUrl", 
               created_at as "createdAt" 
        FROM produtos 
        ORDER BY created_at DESC`
