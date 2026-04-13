@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
 import React from 'react'
 
+import config from '@/payload.config'
 import '../../../(frontend)/styles.css'
 
 export const dynamic = 'force-dynamic'
@@ -9,31 +11,24 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
-async function getProduto(slug: string) {
-  try {
-    const res = await fetch(`https://shopee-store-six.vercel.app/api/produtos?slug=${slug}`, {
-      next: { revalidate: 0 }
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.data?.[0] || null
-  } catch (error) {
-    console.error('Error fetching produto:', error)
-    return null
-  }
-}
-
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const produto = await getProduto(slug)
+  const payload = await getPayload({ config: await config })
+  
+  const result = await payload.find({
+    collection: 'produtos',
+    where: { slug: { equals: slug } },
+    limit: 1,
+  })
 
-  if (!produto) {
+  if (!result.docs[0]) {
     return { title: 'Produto não encontrado' }
   }
 
+  const produto = result.docs[0] as any
   const title = `${produto.titulo} | Loja Fitness`
-  const description = `Compre ${produto.titulo} com o melhor preço!`
+  const description = produto.descricao || `Compre ${produto.titulo} com o melhor preço!`
   
   return {
     title,
@@ -55,11 +50,19 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params
-  const produto = await getProduto(slug)
+  const payload = await getPayload({ config: await config })
+  
+  const result = await payload.find({
+    collection: 'produtos',
+    where: { slug: { equals: slug } },
+    limit: 1,
+  })
 
-  if (!produto) {
+  if (!result.docs[0]) {
     notFound()
   }
+
+  const produto = result.docs[0] as any
 
   return (
     <div className="store-container">
@@ -93,6 +96,10 @@ export default async function ProductPage({ params }: Props) {
               ? produto.preco.toFixed(2).replace('.', ',') 
               : produto.preco}
           </span>
+
+          {produto.descricao && (
+            <p className="product-detail-description">{produto.descricao}</p>
+          )}
 
           <a
             href={produto.linkAfiliado}
